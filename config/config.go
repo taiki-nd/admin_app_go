@@ -8,6 +8,7 @@ import (
 )
 
 type ConfigList struct {
+	Logfile         string
 	SqlDevelop      string
 	HostDevelop     string
 	PortDevelop     string
@@ -26,6 +27,7 @@ func init() {
 	}
 
 	Config = ConfigList{
+		Logfile:         cfg.Section("admin_app_go").Key("log_file").String(),
 		SqlDevelop:      cfg.Section("db_development").Key("sql_develop").String(),
 		HostDevelop:     cfg.Section("db_development").Key("host_develop").String(),
 		PortDevelop:     cfg.Section("db_development").Key("port_develop").String(),
