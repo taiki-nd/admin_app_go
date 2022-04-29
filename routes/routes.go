@@ -8,4 +8,5 @@ import (
 
 func Routes(app *fiber.App) {
 	app.Get("/", controllers.Hello)
+	app.Get("/other", controllers.Bye)
 }
