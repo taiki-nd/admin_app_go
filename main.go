@@ -1,8 +1,15 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"admin_app_go/config"
+	"fmt"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func main() {
+
+	fmt.Println(config.Config.SqlDevelop)
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
