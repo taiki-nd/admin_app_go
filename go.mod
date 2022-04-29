@@ -1,4 +1,4 @@
-module github.com/taiki-nd/admin_app_go
+module admin_app_go
 
 go 1.17
 
@@ -10,4 +10,5 @@ require (
 	github.com/valyala/fasthttp v1.36.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
+	gopkg.in/ini.v1 v1.66.4 // indirect
 )
