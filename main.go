@@ -2,20 +2,16 @@ package main
 
 import (
 	"admin_app_go/config"
+	"admin_app_go/db"
 	"admin_app_go/utils"
-	"fmt"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 
-	fmt.Println(config.Config.SqlDevelop)
-
 	utils.Logging(config.Config.Logfile)
-	log.Println("logging test")
-	log.Fatalln("stop test")
+	db.ConnectToDb()
 
 	app := fiber.New()
 
