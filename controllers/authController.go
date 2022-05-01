@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"admin_app_go/db"
+	"admin_app_go/logic"
 	"admin_app_go/models"
 	"log"
 	"strconv"
@@ -105,20 +106,26 @@ func Login(c *fiber.Ctx) error {
 
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
-	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
-	})
-	if err != nil || !token.Valid {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
-	}
-
-	claims := token.Claims.(*Claims)
-
-	var user models.User
-	db.DB.Where("id =?", claims.Issuer).First(&user)
-
+	user := logic.GetUserFromCookie(cookie, c)
 	return c.JSON(&user)
+}
+
+func Logout(c *fiber.Ctx) error {
+	log.Printf("start logout")
+	user := logic.GetUserFromCookie(c.Cookies("jwt"), c)
+	log.Printf("start logout: ID = %v, Email = %s", user.ID, user.Email)
+
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+	c.Cookie(&cookie)
+
+	log.Println("logout success")
+
+	return c.JSON(fiber.Map{
+		"message": "success logout",
+	})
 }
