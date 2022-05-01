@@ -2,6 +2,7 @@ package db
 
 import (
 	"admin_app_go/config"
+	"admin_app_go/models"
 	"fmt"
 	"log"
 
@@ -21,4 +22,6 @@ func ConnectToDb() {
 	}
 
 	log.Printf("success db connection: %v", db)
+
+	db.AutoMigrate(&models.User{})
 }
