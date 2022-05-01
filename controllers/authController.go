@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"admin_app_go/db"
 	"admin_app_go/models"
 	"log"
 
@@ -35,6 +36,8 @@ func Register(c *fiber.Ctx) error {
 		Email:     data["email"],
 		Password:  password,
 	}
+
+	db.DB.Create(&user)
 
 	return c.JSON(user)
 }
