@@ -12,6 +12,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Claims struct {
+	jwt.StandardClaims
+}
+
 func Register(c *fiber.Ctx) error {
 	log.Println("start register")
 
@@ -97,4 +101,24 @@ func Login(c *fiber.Ctx) error {
 	log.Printf("login success: %s", data["email"])
 
 	return c.JSON(token)
+}
+
+func User(c *fiber.Ctx) error {
+	cookie := c.Cookies("jwt")
+	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+	if err != nil || !token.Valid {
+		c.Status(fiber.StatusUnauthorized)
+		return c.JSON(fiber.Map{
+			"message": "unauthenticated",
+		})
+	}
+
+	claims := token.Claims.(*Claims)
+
+	var user models.User
+	db.DB.Where("id =?", claims.Issuer).First(&user)
+
+	return c.JSON(&user)
 }
