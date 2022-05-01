@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var DB *gorm.DB
+
 func ConnectToDb() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		config.Config.UserDevelop, config.Config.PasswordDevelop,
@@ -22,6 +24,8 @@ func ConnectToDb() {
 	}
 
 	log.Printf("success db connection: %v", db)
+
+	DB = db
 
 	db.AutoMigrate(&models.User{})
 }
