@@ -1,8 +1,8 @@
 package logic
 
 import (
-	"admin_app_go/db"
-	"admin_app_go/models"
+	"strconv"
+	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
@@ -12,19 +12,27 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GetUserFromCookie(cookie string, c *fiber.Ctx) (user models.User) {
+func GenerateJwt(userID int) (string, error) {
+	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		Issuer:    strconv.Itoa(int(userID)),
+		ExpiresAt: &jwt.Time{time.Now().Add(time.Hour * 24)},
+	})
+
+	return claims.SignedString([]byte("secret"))
+}
+
+func ParseJwt(cookie string, c *fiber.Ctx) (string, error) {
 	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte("secret"), nil
 	})
 	if err != nil || !token.Valid {
 		c.Status(fiber.StatusUnauthorized)
-		c.JSON(fiber.Map{
+		return "", c.JSON(fiber.Map{
 			"message": "unauthenticated",
 		})
 	}
 
 	claims := token.Claims.(*Claims)
 
-	db.DB.Where("id =?", claims.Issuer).First(&user)
-	return user
+	return claims.Issuer, nil
 }
