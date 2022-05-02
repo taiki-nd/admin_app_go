@@ -5,17 +5,11 @@ import (
 	"admin_app_go/logic"
 	"admin_app_go/models"
 	"log"
-	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type Claims struct {
-	jwt.StandardClaims
-}
 
 func Register(c *fiber.Ctx) error {
 	log.Println("start register")
@@ -80,12 +74,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: &jwt.Time{time.Now().Add(time.Hour * 24)},
-	})
-
-	token, err := claims.SignedString([]byte("secret"))
+	token, err := logic.GenerateJwt(int(user.Id))
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
@@ -106,13 +95,24 @@ func Login(c *fiber.Ctx) error {
 
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
-	user := logic.GetUserFromCookie(cookie, c)
+	issuer, err := logic.ParseJwt(cookie, c)
+	if err != nil {
+		return err
+	}
+	user := models.User{}
+	db.DB.Where("id =?", issuer).First(&user)
+
 	return c.JSON(&user)
 }
 
 func Logout(c *fiber.Ctx) error {
 	log.Printf("start logout")
-	user := logic.GetUserFromCookie(c.Cookies("jwt"), c)
+	issuer, err := logic.ParseJwt(c.Cookies("jwt"), c)
+	if err != nil {
+		return err
+	}
+	user := models.User{}
+	db.DB.Where("id =?", issuer).First(&user)
 	log.Printf("start logout: ID = %v, Email = %s", user.Id, user.Email)
 
 	cookie := fiber.Cookie{
