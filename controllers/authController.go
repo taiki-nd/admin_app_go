@@ -63,7 +63,7 @@ func Login(c *fiber.Ctx) error {
 
 	var user models.User
 	db.DB.Where("email = ?", data["email"]).First(&user)
-	if user.ID == 0 {
+	if user.Id == 0 {
 		c.Status(404)
 		log.Printf("user not found: email = %s", data["email"])
 		return c.JSON(fiber.Map{
@@ -74,14 +74,14 @@ func Login(c *fiber.Ctx) error {
 	err = bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"]))
 	if err != nil {
 		c.Status(400)
-		log.Printf("incorrect password: ID = %v, email = %s", user.ID, user.Email)
+		log.Printf("incorrect password: ID = %v, email = %s", user.Id, user.Email)
 		return c.JSON(fiber.Map{
 			"message": "incorrect password",
 		})
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.ID)),
+		Issuer:    strconv.Itoa(int(user.Id)),
 		ExpiresAt: &jwt.Time{time.Now().Add(time.Hour * 24)},
 	})
 
@@ -113,7 +113,7 @@ func User(c *fiber.Ctx) error {
 func Logout(c *fiber.Ctx) error {
 	log.Printf("start logout")
 	user := logic.GetUserFromCookie(c.Cookies("jwt"), c)
-	log.Printf("start logout: ID = %v, Email = %s", user.ID, user.Email)
+	log.Printf("start logout: ID = %v, Email = %s", user.Id, user.Email)
 
 	cookie := fiber.Cookie{
 		Name:     "jwt",
