@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
-	"github.com/gofiber/fiber/v2"
 )
 
 type Claims struct {
@@ -21,15 +20,12 @@ func GenerateJwt(userID int) (string, error) {
 	return claims.SignedString([]byte("secret"))
 }
 
-func ParseJwt(cookie string, c *fiber.Ctx) (string, error) {
+func ParseJwt(cookie string) (string, error) {
 	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte("secret"), nil
 	})
 	if err != nil || !token.Valid {
-		c.Status(fiber.StatusUnauthorized)
-		return "", c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
+		return "", nil
 	}
 
 	claims := token.Claims.(*Claims)
