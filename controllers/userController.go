@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func UserIndex(c *fiber.Ctx) error {
@@ -25,8 +24,7 @@ func UserCreate(c *fiber.Ctx) error {
 		return err
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
-	user.Password = password
+	user.SetPassword(string(user.Password))
 
 	db.DB.Create(&user)
 
