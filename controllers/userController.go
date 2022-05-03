@@ -3,8 +3,10 @@ package controllers
 import (
 	"admin_app_go/db"
 	"admin_app_go/models"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func UserIndex(c *fiber.Ctx) error {
@@ -12,4 +14,21 @@ func UserIndex(c *fiber.Ctx) error {
 	db.DB.Find(&users)
 
 	return c.JSON(users)
+}
+
+func UserCreate(c *fiber.Ctx) error {
+	var user models.User
+
+	err := c.BodyParser(&user)
+	if err != nil {
+		log.Printf("POST method error: %s", err)
+		return err
+	}
+
+	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	user.Password = password
+
+	db.DB.Create(&user)
+
+	return c.JSON(&user)
 }
