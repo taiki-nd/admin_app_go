@@ -95,11 +95,9 @@ func Login(c *fiber.Ctx) error {
 
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
-	issuer, err := logic.ParseJwt(cookie, c)
-	if err != nil {
-		return err
-	}
-	user := models.User{}
+	issuer, _ := logic.ParseJwt(cookie)
+
+	var user models.User
 	db.DB.Where("id =?", issuer).First(&user)
 
 	return c.JSON(&user)
@@ -107,7 +105,7 @@ func User(c *fiber.Ctx) error {
 
 func Logout(c *fiber.Ctx) error {
 	log.Printf("start logout")
-	issuer, err := logic.ParseJwt(c.Cookies("jwt"), c)
+	issuer, err := logic.ParseJwt(c.Cookies("jwt"))
 	if err != nil {
 		return err
 	}
