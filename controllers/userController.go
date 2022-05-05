@@ -53,3 +53,11 @@ func UserUpdate(c *fiber.Ctx) error {
 
 	return c.JSON(user)
 }
+
+func UserDelete(c *fiber.Ctx) error {
+	user := logic.GetUserFromId(c)
+
+	db.DB.Delete(user)
+
+	return nil
+}

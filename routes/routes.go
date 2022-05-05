@@ -19,4 +19,5 @@ func Routes(app *fiber.App) {
 	app.Post("/api/users", controllers.UserCreate)
 	app.Get("/api/users/:id", controllers.UserShow)
 	app.Put("/api/users/:id", controllers.UserUpdate)
+	app.Delete("/api/users/:id", controllers.UserDelete)
 }
