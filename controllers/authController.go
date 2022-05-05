@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(c *fiber.Ctx) error {
@@ -30,14 +29,13 @@ func Register(c *fiber.Ctx) error {
 		})
 	}
 
-	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
-
 	user := models.User{
 		FirstName: data["first_name"],
 		LastName:  data["last_name"],
 		Email:     data["email"],
-		Password:  password,
 	}
+
+	user.SetPassword(data["password"])
 
 	db.DB.Create(&user)
 	log.Printf("finish register: %v", user)
@@ -65,7 +63,7 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	err = bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"]))
+	err = user.ComparePassword((data["password"]))
 	if err != nil {
 		c.Status(400)
 		log.Printf("incorrect password: ID = %v, email = %s", user.Id, user.Email)
