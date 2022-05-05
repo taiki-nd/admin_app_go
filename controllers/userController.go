@@ -4,6 +4,7 @@ import (
 	"admin_app_go/db"
 	"admin_app_go/models"
 	"log"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -29,4 +30,16 @@ func UserCreate(c *fiber.Ctx) error {
 	db.DB.Create(&user)
 
 	return c.JSON(&user)
+}
+
+func UserShow(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+
+	user := models.User{
+		Id: uint(id),
+	}
+
+	db.DB.Find(&user)
+
+	return c.JSON(user)
 }

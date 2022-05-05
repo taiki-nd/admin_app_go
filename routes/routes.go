@@ -17,4 +17,5 @@ func Routes(app *fiber.App) {
 	app.Post("api/logout", controllers.Logout)
 	app.Get("/api/users", controllers.UserIndex)
 	app.Post("/api/users", controllers.UserCreate)
+	app.Get("/api/users/:id", controllers.UserShow)
 }
