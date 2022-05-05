@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"admin_app_go/db"
+	"admin_app_go/logic"
 	"admin_app_go/models"
 	"log"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -33,11 +33,7 @@ func UserCreate(c *fiber.Ctx) error {
 }
 
 func UserShow(c *fiber.Ctx) error {
-	id, _ := strconv.Atoi(c.Params("id"))
-
-	user := models.User{
-		Id: uint(id),
-	}
+	user := logic.GetUserFromId(c)
 
 	db.DB.Find(&user)
 
@@ -45,11 +41,7 @@ func UserShow(c *fiber.Ctx) error {
 }
 
 func UserUpdate(c *fiber.Ctx) error {
-	id, _ := strconv.Atoi(c.Params("id"))
-
-	user := models.User{
-		Id: uint(id),
-	}
+	user := logic.GetUserFromId(c)
 
 	err := c.BodyParser(&user)
 	if err != nil {
