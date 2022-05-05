@@ -43,3 +43,21 @@ func UserShow(c *fiber.Ctx) error {
 
 	return c.JSON(user)
 }
+
+func UserUpdate(c *fiber.Ctx) error {
+	id, _ := strconv.Atoi(c.Params("id"))
+
+	user := models.User{
+		Id: uint(id),
+	}
+
+	err := c.BodyParser(&user)
+	if err != nil {
+		log.Printf("PUT method error: %s", err)
+		return err
+	}
+
+	db.DB.Model(&user).Updates(user)
+
+	return c.JSON(user)
+}
