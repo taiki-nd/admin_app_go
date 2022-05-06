@@ -7,6 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type RolePermission struct {
+	Name        string
+	Permissions []int
+}
+
 func GetRoleFromId(c *fiber.Ctx) models.Role {
 	id, _ := strconv.Atoi(c.Params("id"))
 
@@ -15,4 +20,17 @@ func GetRoleFromId(c *fiber.Ctx) models.Role {
 	}
 
 	return role
+}
+
+func GetPermissions() []models.Permission {
+	var rolePermission RolePermission
+	permissions := make([]models.Permission, len(rolePermission.Permissions))
+
+	for i, permissionId := range rolePermission.Permissions {
+		permissions[i] = models.Permission{
+			Id: uint(permissionId),
+		}
+	}
+
+	return permissions
 }
