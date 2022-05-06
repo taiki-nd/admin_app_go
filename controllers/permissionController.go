@@ -10,7 +10,7 @@ import (
 
 func PermissionIndex(c *fiber.Ctx) error {
 	var permissions []models.Permission
-	db.DB.Preload("Role").Find(&permissions)
+	db.DB.Find(&permissions)
 
 	log.Println("show all users")
 
