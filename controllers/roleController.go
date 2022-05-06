@@ -17,7 +17,7 @@ type RolePermission struct {
 
 func RoleIndex(c *fiber.Ctx) error {
 	var roles []models.Role
-	db.DB.Find(&roles)
+	db.DB.Preload("Permissions").Find(&roles)
 
 	log.Println("show all roles")
 
@@ -33,13 +33,7 @@ func RoleCreate(c *fiber.Ctx) error {
 		return err
 	}
 
-	permissions := make([]models.Permission, len(rolePermission.Permissions))
-
-	for i, permissionId := range rolePermission.Permissions {
-		permissions[i] = models.Permission{
-			Id: uint(permissionId),
-		}
-	}
+	permissions := logic.GetPermissions()
 
 	role := models.Role{
 		Name:        rolePermission.Name,
@@ -50,27 +44,12 @@ func RoleCreate(c *fiber.Ctx) error {
 	log.Printf("create new role: id = %v", role.Id)
 
 	return c.JSON(&role)
-
-	/*
-		var role models.Role
-
-		err := c.BodyParser(&role)
-		if err != nil {
-			log.Printf("POST method error: %s", err)
-			return err
-		}
-
-		db.DB.Create(&role)
-		log.Printf("create new role: id = %v", role.Id)
-
-		return c.JSON(&role)
-	*/
 }
 
 func RoleShow(c *fiber.Ctx) error {
 	role := logic.GetRoleFromId(c)
 
-	db.DB.Find(&role)
+	db.DB.Preload("Permissions").Find(&role)
 	log.Printf("show Role: id = %v", role.Id)
 
 	return c.JSON(role)
@@ -85,13 +64,7 @@ func RoleUpdate(c *fiber.Ctx) error {
 		return err
 	}
 
-	permissions := make([]models.Permission, len(rolePermission.Permissions))
-
-	for i, permissionId := range rolePermission.Permissions {
-		permissions[i] = models.Permission{
-			Id: uint(permissionId),
-		}
-	}
+	permissions := logic.GetPermissions()
 
 	id, _ := strconv.Atoi(c.Params("id"))
 
