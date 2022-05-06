@@ -27,7 +27,7 @@ func ConnectToDb() {
 
 	DB = db
 
-	db.AutoMigrate(&models.Role{}, &models.User{})
+	db.AutoMigrate(&models.Role{}, &models.User{}, &models.Permission{})
 	//db.Migrator().DropTable(&models.User{}, &models.Role{})
 	//db.Migrator().CreateTable(&models.User{}, &models.Role{})
 }
