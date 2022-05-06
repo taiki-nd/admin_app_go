@@ -11,7 +11,7 @@ import (
 
 func UserIndex(c *fiber.Ctx) error {
 	var users []models.User
-	db.DB.Find(&users)
+	db.DB.Preload("Role").Find(&users)
 
 	log.Println("show all users")
 
@@ -38,7 +38,7 @@ func UserCreate(c *fiber.Ctx) error {
 func UserShow(c *fiber.Ctx) error {
 	user := logic.GetUserFromId(c)
 
-	db.DB.Find(&user)
+	db.DB.Preload("Role").Find(&user)
 	log.Printf("show user: id = %v", user.Id)
 
 	return c.JSON(user)
