@@ -9,6 +9,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type RolePermission struct {
+	Name        string
+	Permissions []int
+}
+
 func RoleIndex(c *fiber.Ctx) error {
 	var roles []models.Role
 	db.DB.Find(&roles)
@@ -19,18 +24,46 @@ func RoleIndex(c *fiber.Ctx) error {
 }
 
 func RoleCreate(c *fiber.Ctx) error {
-	var role models.Role
+	var rolePermission RolePermission
 
-	err := c.BodyParser(&role)
+	err := c.BodyParser(&rolePermission)
 	if err != nil {
 		log.Printf("POST method error: %s", err)
 		return err
+	}
+
+	permissions := make([]models.Permission, len(rolePermission.Permissions))
+
+	for i, permissionId := range rolePermission.Permissions {
+		permissions[i] = models.Permission{
+			Id: uint(permissionId),
+		}
+	}
+
+	role := models.Role{
+		Name:        rolePermission.Name,
+		Permissions: permissions,
 	}
 
 	db.DB.Create(&role)
 	log.Printf("create new role: id = %v", role.Id)
 
 	return c.JSON(&role)
+
+	/*
+		var role models.Role
+
+		err := c.BodyParser(&role)
+		if err != nil {
+			log.Printf("POST method error: %s", err)
+			return err
+		}
+
+		db.DB.Create(&role)
+		log.Printf("create new role: id = %v", role.Id)
+
+		return c.JSON(&role)
+	*/
 }
 
 func RoleShow(c *fiber.Ctx) error {
