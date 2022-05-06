@@ -14,6 +14,8 @@ type User struct {
 	Password  []byte    `json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	RoleId    uint      `json:"role_id"`
+	Role      Role      `json:"role" gorm:"foreignKey:RoleId"`
 }
 
 func (user *User) SetPassword(password string) {
