@@ -14,6 +14,8 @@ func Routes(app *fiber.App) {
 	app.Use(middlewares.IsAuthenticated)
 
 	app.Get("/api/user", controllers.User)
+	app.Put("/api/user/info", controllers.UpdatesInfo)
+	app.Put("/api/user/password", controllers.UpdatesPassword)
 	app.Post("api/logout", controllers.Logout)
 
 	app.Get("/api/users", controllers.UserIndex)

@@ -5,6 +5,7 @@ import (
 	"admin_app_go/logic"
 	"admin_app_go/models"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -125,4 +126,60 @@ func Logout(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success logout",
 	})
+}
+
+func UpdatesInfo(c *fiber.Ctx) error {
+	var data map[string]string
+
+	err := c.BodyParser(&data)
+	if err != nil {
+		log.Fatalf("POST method error: %s", err)
+		return err
+	}
+
+	cookie := c.Cookies("jwt")
+	issuer, _ := logic.ParseJwt(cookie)
+	id, _ := strconv.Atoi(issuer)
+
+	user := models.User{
+		Id:        uint(id),
+		FirstName: data["first_name"],
+		LastName:  data["last_name"],
+		Email:     data["email"],
+	}
+
+	db.DB.Model(&user).Updates(user)
+
+	return c.JSON(user)
+}
+
+func UpdatesPassword(c *fiber.Ctx) error {
+	var data map[string]string
+
+	err := c.BodyParser(&data)
+	if err != nil {
+		log.Fatalf("POST method error: %s", err)
+		return err
+	}
+
+	if data["password"] != data["password_confirm"] {
+		c.Status(400)
+		log.Println("password & password_confirm dose not match.")
+		return c.JSON(fiber.Map{
+			"message": "password & password_confirm dose not match.",
+		})
+	}
+
+	cookie := c.Cookies("jwt")
+	issuer, _ := logic.ParseJwt(cookie)
+	id, _ := strconv.Atoi(issuer)
+
+	user := models.User{
+		Id: uint(id),
+	}
+	user.SetPassword(data["password"])
+
+	db.DB.Model(&user).Updates(user)
+
+	return c.JSON(user)
 }
