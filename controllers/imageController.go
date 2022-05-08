@@ -18,6 +18,7 @@ func UploadImage(c *fiber.Ctx) error {
 
 	for _, file := range files {
 		filename = file.Filename
+		log.Printf("upload image: %s", filename)
 		err := c.SaveFile(file, "./uploads/"+filename)
 		if err != nil {
 			log.Printf("failed to save uploads images: %s", err)
