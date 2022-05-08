@@ -36,5 +36,8 @@ func Routes(app *fiber.App) {
 	app.Put("/api/products/:id", controllers.ProductUpdate)
 	app.Delete("/api/products/:id", controllers.ProductDelete)
 
+	app.Post("/api/upload", controllers.UploadImage)
+	app.Static("/api/uploads", "./uploads")
+
 	app.Get("/api/permissions", controllers.PermissionIndex)
 }
