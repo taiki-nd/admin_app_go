@@ -30,5 +30,11 @@ func Routes(app *fiber.App) {
 	app.Put("/api/roles/:id", controllers.RoleUpdate)
 	app.Delete("/api/roles/:id", controllers.RoleDelete)
 
+	app.Get("/api/products", controllers.ProductIndex)
+	app.Post("/api/products", controllers.ProductCreate)
+	app.Get("/api/products/:id", controllers.ProductShow)
+	app.Put("/api/products/:id", controllers.ProductUpdate)
+	app.Delete("/api/products/:id", controllers.ProductDelete)
+
 	app.Get("/api/permissions", controllers.PermissionIndex)
 }
