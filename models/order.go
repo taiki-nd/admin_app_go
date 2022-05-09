@@ -15,11 +15,11 @@ type Order struct {
 }
 
 type OrderItem struct {
-	Id           uint `json:"id" gorm:"primarykey"`
-	OrderId      uint
-	ProductTitle string
-	Price        float64
-	Quantity     int
+	Id           uint      `json:"id" gorm:"primarykey"`
+	OrderId      uint      `json:"order_id"`
+	ProductTitle string    `json:"product_title"`
+	Price        float64   `json:"price"`
+	Quantity     int       `json:"quantity"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
