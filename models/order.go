@@ -6,8 +6,9 @@ import (
 
 type Order struct {
 	Id         uint        `json:"id" gorm:"primarykey"`
-	FirstName  string      `json:"first_name"`
-	LastName   string      `json:"last_name"`
+	FirstName  string      `json:"-"`
+	LastName   string      `json:"-"`
+	Name       string      `json:"name" gorm:"-"`
 	Email      string      `json:"email" gorm:"unique"`
 	OrderItems []OrderItem `json:"order_items" gorm:"foreignKey:OrderId"`
 	CreatedAt  time.Time   `json:"created_at"`

@@ -24,6 +24,10 @@ func OrderIndex(c *fiber.Ctx) error {
 
 	lastPage := math.Ceil(float64(total) / float64(limit))
 
+	for i, _ := range orders {
+		orders[i].Name = orders[i].FirstName + " " + orders[i].LastName
+	}
+
 	return c.JSON(fiber.Map{
 		"data": orders,
 		"meta": fiber.Map{
