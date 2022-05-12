@@ -3,8 +3,10 @@ package controllers
 import (
 	"admin_app_go/db"
 	"admin_app_go/models"
+	"encoding/csv"
 	"log"
 	"math"
+	"os"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -36,4 +38,68 @@ func OrderIndex(c *fiber.Ctx) error {
 			"last_page": lastPage,
 		},
 	})
+}
+
+func ExportCsv(c *fiber.Ctx) error {
+	filepath := "./csv/orders.csv"
+
+	err := CreateCsv(filepath)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return c.Download(filepath)
+}
+
+func CreateCsv(filepath string) error {
+	file, err := os.Create(filepath)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	var orders []models.Order
+	db.DB.Preload("OrderItems").Find(&orders)
+	writer.Write([]string{
+		"ID", "Name", "Email", "Product Title", "Price", "Quantity",
+	})
+
+	for _, order := range orders {
+		data := []string{
+			strconv.Itoa(int(order.Id)),
+			order.FirstName + " " + order.LastName,
+			order.Email,
+			"",
+			"",
+			"",
+		}
+		err := writer.Write(data)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+
+		for _, orderItem := range order.OrderItems {
+			data := []string{
+				"",
+				"",
+				"",
+				orderItem.ProductTitle,
+				strconv.Itoa(int(orderItem.Price)),
+				strconv.Itoa(orderItem.Quantity),
+			}
+			err := writer.Write(data)
+			if err != nil {
+				log.Println(err)
+				return err
+			}
+		}
+	}
+
+	return nil
 }
