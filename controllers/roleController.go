@@ -33,7 +33,7 @@ func RoleCreate(c *fiber.Ctx) error {
 		return err
 	}
 
-	permissions := logic.GetPermissions()
+	permissions := logic.GetPermissions(logic.RolePermission(rolePermission))
 
 	role := models.Role{
 		Name:        rolePermission.Name,
@@ -64,7 +64,7 @@ func RoleUpdate(c *fiber.Ctx) error {
 		return err
 	}
 
-	permissions := logic.GetPermissions()
+	permissions := logic.GetPermissions(logic.RolePermission(rolePermission))
 
 	id, _ := strconv.Atoi(c.Params("id"))
 
