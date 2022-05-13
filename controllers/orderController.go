@@ -12,6 +12,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type Sales struct {
+	Date string `json:"date"`
+	Sum  string `json:"sum"`
+}
+
 func OrderIndex(c *fiber.Ctx) error {
 	var orders []models.Order
 	limit := 5
@@ -100,6 +105,18 @@ func CreateCsv(filepath string) error {
 			}
 		}
 	}
-
 	return nil
+}
+
+func Chart(c *fiber.Ctx) error {
+	var sales []Sales
+
+	db.DB.Raw(`
+	SELECT DATE_FORMAT(o.created_at, '%y-%m-%d') AS date, SUM(oi.price * oi.quantity) as sum
+	FROM orders o
+	JOIN order_items oi ON o.id = oi.order_id
+	GROUP BY date
+	`).Scan(&sales)
+
+	return c.JSON(sales)
 }
