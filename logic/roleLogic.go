@@ -22,8 +22,7 @@ func GetRoleFromId(c *fiber.Ctx) models.Role {
 	return role
 }
 
-func GetPermissions() []models.Permission {
-	var rolePermission RolePermission
+func GetPermissions(rolePermission RolePermission) []models.Permission {
 	permissions := make([]models.Permission, len(rolePermission.Permissions))
 
 	for i, permissionId := range rolePermission.Permissions {
