@@ -38,6 +38,7 @@ func Routes(app *fiber.App) {
 
 	app.Get("/api/orders", controllers.OrderIndex)
 	app.Post("/api/export", controllers.ExportCsv)
+	app.Get("/api/chart", controllers.Chart)
 
 	app.Post("/api/upload", controllers.UploadImage)
 	app.Static("/api/uploads", "./uploads")
