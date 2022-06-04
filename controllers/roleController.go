@@ -83,8 +83,11 @@ func RoleUpdate(c *fiber.Ctx) error {
 }
 
 func RoleDelete(c *fiber.Ctx) error {
-	role := logic.GetRoleFromId(c)
+	//アソシエーションのくんであるものをあらかじめ削除する必要がある
+	id, _ := strconv.Atoi(c.Params("id"))
+	db.DB.Table("role_permissions").Where("role_id", id).Delete("")
 
+	role := logic.GetRoleFromId(c)
 	db.DB.Delete(role)
 	log.Printf("delete role")
 
